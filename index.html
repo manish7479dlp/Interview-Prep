@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Design Complete Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        header p { font-size: 1.1em; opacity: 0.9; }
+        
+        nav {
+            background: #f8f9fa;
+            border-bottom: 2px solid #ddd;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav button {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            border: none;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        nav button.active, nav button:hover {
+            background: #667eea;
+            color: white;
+            border-bottom-color: #667eea;
+        }
+        
+        .content {
+            padding: 40px 20px;
+            display: none;
+        }
+        .content.active { display: block; }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin: 30px 0 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px;
+        }
+        
+        h4 {
+            color: #667eea;
+            margin: 15px 0 10px;
+        }
+        
+        .problem-box {
+            background: #e8f1ff;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+            border: 1px solid #3e4451;
+        }
+        
+        .code-block code {
+            color: inherit;
+            background: none;
+            padding: 0;
+        }
+        
+        .diff-good {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .diff-bad {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .key-points {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .key-points ul {
+            margin-left: 25px;
+        }
+        
+        .key-points li {
+            margin-bottom: 12px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border: 1px solid #ddd;
+        }
+        
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .difficulty {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        .difficulty.easy {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .difficulty.medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .difficulty.hard {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .diagram {
+            background: #f5f5f5;
+            border: 2px dashed #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+        
+        ul {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        strong {
+            color: #667eea;
+        }
+        
+        footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            color: #666;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 System Design Complete Guide</h1>
+            <p>HLD & LLD Solutions for 2-Year Java Developers</p>
+        </header>
+
+        <nav>
+            <button class="nav-btn active" onclick="showTab('solid', this)">SOLID</button>
+            <button class="nav-btn" onclick="showTab('lru', this)">LRU Cache</button>
+            <button class="nav-btn" onclick="showTab('rate', this)">Rate Limiter</button>
+            <button class="nav-btn" onclick="showTab('parking', this)">Parking Lot</button>
+            <button class="nav-btn" onclick="showTab('patterns', this)">Patterns</button>
+            <button class="nav-btn" onclick="showTab('interview', this)">Tips</button>
+        </nav>
+
+        <!-- SOLID PRINCIPLES -->
+        <div id="solid" class="content active">
+            <h2>SOLID Principles in Java</h2>
+            
+            <h3>1. Single Responsibility Principle (SRP)</h3>
+            <p><strong>Definition:</strong> A class should have only one reason to change - it should have only one job.</p>
+            
+            <div class="diff-bad">
+                <h4>❌ BAD - Multiple Responsibilities</h4>
+                <div class="code-block"><pre><code class="language-java">class User {
+    private String name;
+    private String email;
+    
+    void saveToDatabase() {
+        // Database logic
+    }
+    
+    void sendEmail() {
+        // Email logic
+    }
+    
+    void generateReport() {
+        // Report logic
+    }
+}</code></pre></div>
+            </div>
+            
+            <div class="diff-good">
+                <h4>✅ GOOD - Single Responsibility</h4>
+                <div class="code-block"><pre><code class="language-java">class User {
+    private String name;
+    private String email;
+    // Only user data
+}
+
+class UserRepository {
+    void save(User user) {
+        // Database operations
+    }
+}
+
+class EmailService {
+    void send(User user, String message) {
+        // Email operations
+    }
+}</code></pre></div>
+            </div>
+
+            <h3>2. Open/Closed Principle (OCP)</h3>
+            <p><strong>Definition:</strong> Open for extension, closed for modification.</p>
+            
+            <div class="diff-bad">
+                <h4>❌ BAD - Must modify for each new type</h4>
+                <div class="code-block"><pre><code class="language-java">class PaymentProcessor {
+    void process(String type, double amount) {
+        if (type.equals("credit_card")) {
+            // Process credit card
+        } else if (type.equals("paypal")) {
+            // Process PayPal
+        }
+        // Add new type? Modify this class!
+    }
+}</code></pre></div>
+            </div>
+            
+            <div class="diff-good">
+                <h4>✅ GOOD - Extend without modifying</h4>
+                <div class="code-block"><pre><code class="language-java">interface PaymentMethod {
+    void pay(double amount);
+}
+
+class CreditCardPayment implements PaymentMethod {
+    public void pay(double amount) {
+        // Credit card logic
+    }
+}
+
+class PayPalPayment implements PaymentMethod {
+    public void pay(double amount) {
+        // PayPal logic
+    }
+
+// Add new payment? Just create new class!</code></pre></div>
+            </div>
+
+            <h3>3. Liskov Substitution Principle (LSP)</h3>
+            <p><strong>Definition:</strong> Subtypes must be substitutable for their base types.</p>
+            
+            <div class="code-block"><pre><code class="language-java">// ❌ VIOLATES LSP
+interface Bird {
+    void fly();
+}
+
+class Penguin implements Bird {
+    public void fly() {
+        throw new UnsupportedOperationException();
+        // Penguin can't fly!
+    }
+}
+
+// ✅ CORRECT DESIGN
+interface Bird {
+    void move();
+}
+
+interface FlyingBird extends Bird {
+    void fly();
+}
+
+class Sparrow implements FlyingBird {
+    public void fly() { }
+    public void move() { }
+}
+
+class Penguin implements Bird {
+    public void move() { /* swim */ }
+}</code></pre></div>
+
+            <h3>4. Interface Segregation Principle (ISP)</h3>
+            <p><strong>Definition:</strong> Clients should not depend on interfaces they don't use.</p>
+            
+            <div class="diff-bad">
+                <h4>❌ BAD - Fat Interface</h4>
+                <div class="code-block"><pre><code class="language-java">interface Worker {
+    void work();
+    void eat();
+    void sleep();
+}
+
+class Robot implements Worker {
+    public void work() { }
+    public void eat() { 
+        throw new Error(); // Robot can't eat!
+    }
+    public void sleep() { 
+        throw new Error(); // Robot can't sleep!
+    }
+}</code></pre></div>
+            </div>
+            
+            <div class="diff-good">
+                <h4>✅ GOOD - Segregated Interfaces</h4>
+                <div class="code-block"><pre><code class="language-java">interface Workable { void work(); }
+interface Eatable { void eat(); }
+interface Sleepable { void sleep(); }
+
+class Human implements Workable, Eatable, Sleepable {
+    public void work() { }
+    public void eat() { }
+    public void sleep() { }
+}
+
+class Robot implements Workable {
+    public void work() { }
+    // Only implements what it needs
+}</code></pre></div>
+            </div>
+
+            <h3>5. Dependency Inversion Principle (DIP)</h3>
+            <p><strong>Definition:</strong> Depend on abstractions, not concrete implementations.</p>
+            
+            <div class="code-block"><pre><code class="language-java">// ❌ BAD - High level depends on low level
+class PaymentService {
+    private CreditCardPayment creditCard = new CreditCardPayment();
+    
+    void pay(double amount) {
+        creditCard.process(amount);
+    }
+}
+
+// ✅ GOOD - Depend on abstraction
+interface PaymentGateway {
+    void process(double amount);
+}
+
+class PaymentService {
+    private PaymentGateway gateway;
+    
+    PaymentService(PaymentGateway gateway) {
+        this.gateway = gateway; // Injected!
+    }
+    
+    void pay(double amount) {
+        gateway.process(amount);
+    }
+}</code></pre></div>
+
+            <div class="key-points">
+                <strong>✓ SOLID Benefits:</strong>
+                <ul>
+                    <li>Code is maintainable and flexible</li>
+                    <li>Easy to test with mocks</li>
+                    <li>Reduced coupling</li>
+                    <li>Easy to extend without breaking code</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- LRU CACHE -->
+        <div id="lru" class="content">
+            <h2>LRU Cache Implementation</h2>
+            <span class="difficulty medium">Medium Difficulty</span>
+            
+            <div class="problem-box">
+                <h4>Problem Statement:</h4>
+                <p>Implement an LRU (Least Recently Used) Cache with O(1) get and put operations.</p>
+                <ul>
+                    <li>get(key) - return value or -1 if not found</li>
+                    <li>put(key, value) - set or update value</li>
+                    <li>When capacity exceeded, evict least recently used</li>
+                    <li>Both operations must be O(1)</li>
+                </ul>
+            </div>
+
+            <h3>Key Idea: HashMap + Doubly Linked List</h3>
+            <div class="diagram">Most Recent (Tail)  <-- Node <-- Node <-- Node (Head) Least Recent
+   
+HashMap: {key -> Node}
+Doubly LinkedList: Tracks usage order
+
+On get/put: Move node to tail (most recent)
+On evict: Remove head (least recent)</div>
+
+            <h3>Complete Implementation</h3>
+            <div class="code-block"><pre><code class="language-java">class LRUCache {
+    private int capacity;
+    private Map&lt;Integer, Node&gt; cache;
+    private Node head;  // dummy head (least recent)
+    private Node tail;  // dummy tail (most recent)
+
+    private class Node {
+        int key, value;
+        Node prev, next;
+        
+        Node(int key, int value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        this.cache = new HashMap&lt;&gt;();
+        this.head = new Node(0, 0);
+        this.tail = new Node(0, 0);
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    public int get(int key) {
+        if (!cache.containsKey(key)) {
+            return -1;
+        }
+        
+        Node node = cache.get(key);
+        moveToTail(node);  // Mark as recently used
+        return node.value;
+    }
+
+    public void put(int key, int value) {
+        if (cache.containsKey(key)) {
+            // Update existing
+            Node node = cache.get(key);
+            node.value = value;
+            moveToTail(node);
+        } else {
+            // Add new
+            if (cache.size() == capacity) {
+                removeNode(head.next);  // Remove LRU
+            }
+            Node newNode = new Node(key, value);
+            cache.put(key, newNode);
+            addToTail(newNode);
+        }
+    }
+
+    private void moveToTail(Node node) {
+        removeNode(node);
+        addToTail(node);
+    }
+
+    private void removeNode(Node node) {
+        cache.remove(node.key);
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void addToTail(Node node) {
+        node.prev = tail.prev;
+        node.next = tail;
+        tail.prev.next = node;
+        tail.prev = node;
+    }
+}
+
+// Usage Example:
+LRUCache cache = new LRUCache(2);
+cache.put(1, 1);
+cache.put(2, 2);
+System.out.println(cache.get(1));  // 1
+cache.put(3, 3);  // Evicts key 2
+System.out.println(cache.get(2));  // -1 (evicted)</code></pre></div>
+
+            <h3>Complexity Analysis</h3>
+            <table class="comparison-table">
+                <tr>
+                    <th>Operation</th>
+                    <th>Time Complexity</th>
+                    <th>Why</th>
+                </tr>
+                <tr>
+                    <td>get(key)</td>
+                    <td>O(1)</td>
+                    <td>HashMap lookup + list operations</td>
+                </tr>
+                <tr>
+                    <td>put(key, value)</td>
+                    <td>O(1)</td>
+                    <td>HashMap insert + list operations</td>
+                </tr>
+                <tr>
+                    <td>Overall Space</td>
+                    <td>O(capacity)</td>
+                    <td>Store at most capacity items</td>
+                </tr>
+            </table>
+
+            <div class="key-points">
+                <strong>✓ Key Points to Remember:</strong>
+                <ul>
+                    <li>HashMap gives O(1) lookups</li>
+                    <li>Doubly LinkedList maintains order</li>
+                    <li>Tail = most recently used</li>
+                    <li>Head = least recently used</li>
+                    <li>On access, move node to tail</li>
+                    <li>On eviction, remove head.next</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RATE LIMITER -->
+        <div id="rate" class="content">
+            <h2>Rate Limiter Design</h2>
+            <span class="difficulty medium">Medium Difficulty</span>
+            
+            <div class="problem-box">
+                <h4>Problem Statement:</h4>
+                <p>Design a rate limiter that allows at most N requests per second from a user.</p>
+                <ul>
+                    <li>allowRequest() returns true/false</li>
+                    <li>Must handle distributed systems</li>
+                    <li>Support bursts (Token Bucket)</li>
+                </ul>
+            </div>
+
+            <h3>Algorithm 1: Token Bucket</h3>
+            <div class="diagram">Bucket has capacity tokens
+Refills at rate R tokens/second
+
+Request arrives:
+  - Has token? → Process + Remove token → ALLOW
+  - No token? → REJECT
+
+Allows bursts up to capacity!</div>
+
+            <div class="code-block"><pre><code class="language-java">class TokenBucketRateLimiter {
+    private final int capacity;
+    private final double refillRate;  // tokens per second
+    private double tokens;
+    private long lastRefillTime;
+
+    public TokenBucketRateLimiter(int capacity, double refillRate) {
+        this.capacity = capacity;
+        this.refillRate = refillRate;
+        this.tokens = capacity;
+        this.lastRefillTime = System.currentTimeMillis();
+    }
+
+    public synchronized boolean allowRequest() {
+        refillTokens();
+        
+        if (tokens >= 1.0) {
+            tokens -= 1.0;
+            return true;
+        }
+        return false;
+    }
+
+    private void refillTokens() {
+        long now = System.currentTimeMillis();
+        long timePassed = now - lastRefillTime;
+        
+        // Calculate tokens to add
+        double tokensToAdd = (timePassed / 1000.0) * refillRate;
+        tokens = Math.min(capacity, tokens + tokensToAdd);
+        lastRefillTime = now;
+    }
+}
+
+// Usage:
+TokenBucketRateLimiter limiter = 
+    new TokenBucketRateLimiter(10, 5);  // 10 capacity, 5/sec
+    
+for (int i = 0; i < 15; i++) {
+    if (limiter.allowRequest()) {
+        System.out.println("Request " + i + " allowed");
+    } else {
+        System.out.println("Request " + i + " rejected");
+    }
+}</code></pre></div>
+
+            <h3>Algorithm 2: Sliding Window</h3>
+            <div class="code-block"><pre><code class="language-java">class SlidingWindowRateLimiter {
+    private Queue&lt;Long&gt; requestTimes;
+    private int maxRequests;
+    private long windowSizeMs;
+
+    public SlidingWindowRateLimiter(int maxRequests, long windowSizeMs) {
+        this.requestTimes = new LinkedList&lt;&gt;();
+        this.maxRequests = maxRequests;
+        this.windowSizeMs = windowSizeMs;
+    }
+
+    public synchronized boolean allowRequest() {
+        long now = System.currentTimeMillis();
+        long windowStart = now - windowSizeMs;
+        
+        // Remove requests outside current window
+        while (!requestTimes.isEmpty() && 
+               requestTimes.peek() &lt; windowStart) {
+            requestTimes.poll();
+        }
+        
+        if (requestTimes.size() &lt; maxRequests) {
+            requestTimes.offer(now);
+            return true;
+        }
+        return false;
+    }
+}
+
+// Usage: 5 requests per 1000ms (1 second)
+SlidingWindowRateLimiter limiter = 
+    new SlidingWindowRateLimiter(5, 1000);</code></pre></div>
+
+            <h3>Comparison</h3>
+            <table class="comparison-table">
+                <tr>
+                    <th>Algorithm</th>
+                    <th>Pros</th>
+                    <th>Cons</th>
+                    <th>Use Case</th>
+                </tr>
+                <tr>
+                    <td><strong>Token Bucket</strong></td>
+                    <td>Handles bursts, smooth</td>
+                    <td>Complex</td>
+                    <td>API rate limiting</td>
+                </tr>
+                <tr>
+                    <td><strong>Sliding Window</strong></td>
+                    <td>Simple, accurate</td>
+                    <td>High memory</td>
+                    <td>Login attempts</td>
+                </tr>
+                <tr>
+                    <td><strong>Leaky Bucket</strong></td>
+                    <td>Smooth output</td>
+                    <td>Less flexible</td>
+                    <td>Queue processing</td>
+                </tr>
+            </table>
+
+            <div class="key-points">
+                <strong>✓ When to Use Which:</strong>
+                <ul>
+                    <li><strong>Token Bucket:</strong> APIs allowing bursts (payment processing)</li>
+                    <li><strong>Sliding Window:</strong> Strict limits (5 logins/minute)</li>
+                    <li><strong>Leaky Bucket:</strong> Constant output rate needed</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- PARKING LOT -->
+        <div id="parking" class="content">
+            <h2>Parking Lot System Design</h2>
+            <span class="difficulty hard">Hard Difficulty</span>
+            
+            <div class="problem-box">
+                <h4>Problem Statement:</h4>
+                <p>Design a multi-level parking lot with different spot types.</p>
+                <ul>
+                    <li>Support compact, small, large vehicles</li>
+                    <li>Track parked vehicles</li>
+                    <li>Find nearest available spot</li>
+                </ul>
+            </div>
+
+            <h3>Architecture</h3>
+            <div class="diagram">ParkingLot
+  ├── Level 0
+  │    ├── ParkingSpot 0 (LARGE)
+  │    ├── ParkingSpot 1 (LARGE)
+  │    ├── ParkingSpot 2 (SMALL)
+  │    └── ParkingSpot 3 (COMPACT)
+  ├── Level 1
+  │    └── ...
+  └── Level 2
+       └── ...
+            <h3>Implementation Code</h3>
+            <div class="code-block"><pre><code class="language-java">enum VehicleSize { COMPACT, SMALL, LARGE }
+
+class Vehicle {
+    String licensePlate;
+    VehicleSize size;
+    
+    Vehicle(String plate, VehicleSize size) {
+        this.licensePlate = plate;
+        this.size = size;
+    }
+}
+
+class ParkingSpot {
+    int spotId;
+    VehicleSize spotSize;
+    Vehicle vehicle;
+    
+    ParkingSpot(int spotId, VehicleSize spotSize) {
+        this.spotId = spotId;
+        this.spotSize = spotSize;
+    }
+    
+    boolean isAvailable() {
+        return vehicle == null;
+    }
+    
+    boolean canFitVehicle(Vehicle v) {
+        if (!isAvailable()) return false;
+        if (spotSize == VehicleSize.COMPACT) {
+            return v.size == VehicleSize.COMPACT;
+        } else if (spotSize == VehicleSize.SMALL) {
+            return v.size != VehicleSize.LARGE;
+        }
+        return true;
+    }
+    
+    void parkVehicle(Vehicle v) {
+        if (canFitVehicle(v)) {
+            this.vehicle = v;
+        }
+    }
+    
+    void unparkVehicle() {
+        this.vehicle = null;
+    }
+}
+
+class Level {
+    int levelNumber;
+    List&lt;ParkingSpot&gt; spots;
+    
+    Level(int levelNumber, int numSpots) {
+        this.levelNumber = levelNumber;
+        this.spots = new ArrayList&lt;&gt;();
+        
+        for (int i = 0; i &lt; numSpots; i++) {
+            VehicleSize size;
+            if (i &lt; numSpots / 2) {
+                size = VehicleSize.LARGE;
+            } else if (i &lt; 3 * numSpots / 4) {
+                size = VehicleSize.SMALL;
+            } else {
+                size = VehicleSize.COMPACT;
+            }
+            spots.add(new ParkingSpot(i, size));
+        }
+    }
+    
+    ParkingSpot findAvailableSpot(Vehicle vehicle) {
+        for (ParkingSpot spot : spots) {
+            if (spot.canFitVehicle(vehicle)) {
+                return spot;
+            }
+        }
+        return null;
+    }
+    
+    boolean parkVehicle(Vehicle vehicle) {
+        ParkingSpot spot = findAvailableSpot(vehicle);
+        if (spot != null) {
+            spot.parkVehicle(vehicle);
+            return true;
+        }
+        return false;
+    }
+    
+    boolean unparkVehicle(String licensePlate) {
+        for (ParkingSpot spot : spots) {
+            if (spot.vehicle != null && 
+                spot.vehicle.licensePlate.equals(licensePlate)) {
+                spot.unparkVehicle();
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+class ParkingLot {
+    List&lt;Level&gt; levels;
+    Map&lt;String, Integer&gt; vehicleLocationMap;
+    
+    ParkingLot(int numLevels, int spotsPerLevel) {
+        this.levels = new ArrayList&lt;&gt;();
+        this.vehicleLocationMap = new HashMap&lt;&gt;();
+        
+        for (int i = 0; i &lt; numLevels; i++) {
+            levels.add(new Level(i, spotsPerLevel));
+        }
+    }
+    
+    boolean parkVehicle(Vehicle vehicle) {
+        for (Level level : levels) {
+            if (level.parkVehicle(vehicle)) {
+                vehicleLocationMap.put(vehicle.licensePlate, 
+                                      level.levelNumber);
+                System.out.println("Parked at Level " + 
+                    level.levelNumber);
+                return true;
+            }
+        }
+        System.out.println("No available spot");
+        return false;
+    }
+    
+    boolean unparkVehicle(String licensePlate) {
+        Integer levelNum = vehicleLocationMap.get(licensePlate);
+        if (levelNum != null) {
+            if (levels.get(levelNum).unparkVehicle(licensePlate)) {
+                vehicleLocationMap.remove(licensePlate);
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+// Usage Example:
+ParkingLot lot = new ParkingLot(3, 20);
+Vehicle compact = new Vehicle("ABC123", VehicleSize.COMPACT);
+Vehicle large = new Vehicle("XYZ789", VehicleSize.LARGE);
+
+lot.parkVehicle(compact);
+lot.parkVehicle(large);
+lot.unparkVehicle("ABC123");</code></pre></div>
+
+            <div class="key-points">
+                <strong>✓ Design Patterns Used:</strong>
+                <ul>
+                    <li>Strategy Pattern: Different vehicle sizes</li>
+                    <li>Composite Pattern: Level hierarchy</li>
+                    <li>Observer Pattern: Spot tracking</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- DESIGN PATTERNS -->
+        <div id="patterns" class="content">
+            <h2>Design Patterns for Interviews</h2>
+            
+            <h3>1. Singleton Pattern</h3>
+            <p><strong>Use Case:</strong> Database connections, Logger</p>
+            
+            <div class="code-block"><pre><code class="language-java">class DatabaseConnection {
+    private static volatile DatabaseConnection instance;
+    
+    private DatabaseConnection() {}
+    
+    public static DatabaseConnection getInstance() {
+        if (instance == null) {
+            synchronized (DatabaseConnection.class) {
+                if (instance == null) {
+                    instance = new DatabaseConnection();
+                }
+            }
+        }
+        return instance;
+    }
+}</code></pre></div>
+
+            <h3>2. Factory Pattern</h3>
+            <p><strong>Use Case:</strong> Creating objects without knowing concrete class</p>
+            
+            <div class="code-block"><pre><code class="language-java">interface DataStore {
+    void save(String data);
+}
+
+class DatabaseStore implements DataStore {
+    public void save(String data) { }
+}
+
+class FileStore implements DataStore {
+    public void save(String data) { }
+}
+
+class DataStoreFactory {
+    public static DataStore create(String type) {
+        switch(type) {
+            case "db": return new DatabaseStore();
+            case "file": return new FileStore();
+            default: throw new IllegalArgumentException();
+        }
+    }
+}
+
+DataStore store = DataStoreFactory.create("db");
+store.save("myData");</code></pre></div>
+
+            <h3>3. Builder Pattern</h3>
+            <p><strong>Use Case:</strong> Complex object construction</p>
+            
+            <div class="code-block"><pre><code class="language-java">class User {
+    private String name, email, phone;
+    private int age;
+    
+    private User(UserBuilder builder) {
+        this.name = builder.name;
+        this.email = builder.email;
+        this.age = builder.age;
+        this.phone = builder.phone;
+    }
+    
+    public static class UserBuilder {
+        private String name, email, phone;
+        private int age;
+        
+        public UserBuilder(String name, String email) {
+            this.name = name;
+            this.email = email;
+        }
+        
+        public UserBuilder age(int age) {
+            this.age = age;
+            return this;
+        }
+        
+        public UserBuilder phone(String phone) {
+            this.phone = phone;
+            return this;
+        }
+        
+        public User build() {
+            return new User(this);
+        }
+    }
+}
+
+User user = new User.UserBuilder("John", "john@email.com")
+    .age(30)
+    .phone("555-1234")
+    .build();</code></pre></div>
+
+            <h3>4. Observer Pattern</h3>
+            <p><strong>Use Case:</strong> Event notifications</p>
+            
+            <div class="code-block"><pre><code class="language-java">interface Observer {
+    void update(String event);
+}
+
+class EventSource {
+    private List&lt;Observer&gt; observers = new ArrayList&lt;&gt;();
+    
+    public void subscribe(Observer observer) {
+        observers.add(observer);
+    }
+    
+    public void notifyObservers(String event) {
+        for (Observer obs : observers) {
+            obs.update(event);
+        }
+    }
+}
+
+class EmailNotifier implements Observer {
+    public void update(String event) {
+        System.out.println("Email: " + event);
+    }
+}
+
+EventSource source = new EventSource();
+source.subscribe(new EmailNotifier());
+source.notifyObservers("User registered");</code></pre></div>
+
+            <h3>5. Strategy Pattern</h3>
+            <p><strong>Use Case:</strong> Different algorithms for same operation</p>
+            
+            <div class="code-block"><pre><code class="language-java">interface PaymentStrategy {
+    void pay(double amount);
+}
+
+class CreditCardPayment implements PaymentStrategy {
+    public void pay(double amount) {
+        System.out.println("Paying $" + amount + " via CC");
+    }
+}
+
+class ShoppingCart {
+    private PaymentStrategy strategy;
+    
+    public void setPaymentMethod(PaymentStrategy s) {
+        this.strategy = s;
+    }
+    
+    public void checkout(double amount) {
+        strategy.pay(amount);
+    }
+}
+
+ShoppingCart cart = new ShoppingCart();
+cart.setPaymentMethod(new CreditCardPayment());
+cart.checkout(99.99);</code></pre></div>
+        </div>
+
+        <!-- INTERVIEW TIPS -->
+        <div id="interview" class="content">
+            <h2>System Design Interview Tips</h2>
+            
+            <h3>Before Interview (2-4 Weeks)</h3>
+            <div class="key-points">
+                <ul>
+                    <li><strong>Master LRU Cache:</strong> Most common LLD problem</li>
+                    <li><strong>Learn SOLID:</strong> Asked in almost every interview</li>
+                    <li><strong>3-4 Design Patterns:</strong> Singleton, Factory, Builder, Observer</li>
+                    <li><strong>2-3 HLD Problems:</strong> Twitter Feed, URL Shortener, Cache</li>
+                    <li><strong>Database Basics:</strong> SQL vs NoSQL, indexing, sharding</li>
+                    <li><strong>Caching Strategy:</strong> Redis, TTL, invalidation</li>
+                </ul>
+            </div>
+
+            <h3>During Interview</h3>
+            <div class="key-points">
+                <strong>✓ DO:</strong>
+                <ul>
+                    <li>Ask clarifying questions first</li>
+                    <li>State your assumptions clearly</li>
+                    <li>Draw diagrams while explaining</li>
+                    <li>Discuss trade-offs</li>
+                    <li>Start simple, then optimize</li>
+                    <li>Write clean, readable code</li>
+                    <li>Explain design decisions</li>
+                    <li>Talk through your logic</li>
+                </ul>
+            </div>
+
+            <div class="key-points">
+                <strong>✗ DON'T:</strong>
+                <ul>
+                    <li>Jump to coding immediately</li>
+                    <li>Over-complicate simple problems</li>
+                    <li>Ignore edge cases</li>
+                    <li>Write code without explanation</li>
+                    <li>Claim perfection</li>
+                    <li>Forget about thread-safety</li>
+                    <li>Ignore scalability concerns</li>
+                </ul>
+            </div>
+
+            <h3>For 2-Year Experience Level</h3>
+            <div class="key-points">
+                <strong>Focus On:</strong>
+                <ul>
+                    <li>LLD with clear OOP design</li>
+                    <li>Data structure implementations</li>
+                    <li>Design patterns and SOLID</li>
+                    <li>Basic system components</li>
+                    <li>Thread safety basics</li>
+                </ul>
+            </div>
+
+            <h3>Interview Flow Example</h3>
+            <div class="code-block"><pre><code>Interview: "Design a URL shortener"
+
+1. ASK QUESTIONS (5 min)
+   - How many URLs per day?
+   - Read/write ratio?
+   - How long to keep URLs?
+   - Global or single region?
+
+2. PROPOSE ARCHITECTURE (5 min)
+   - Database schema
+   - API design
+   - Caching strategy
+   - Encoding method
+
+3. DETAILED DESIGN (10 min)
+   - Write key classes
+   - Explain algorithms
+   - Handle edge cases
+
+4. DISCUSS TRADE-OFFS (5 min)
+   - Consistency vs availability
+   - Hashing vs sequential ID
+   - Caching strategy
+
+5. OPTIMIZATION (5 min)
+   - How to scale?
+   - Failure handling?
+   - Monitoring/metrics?</code></pre></div>
+        </div>
+
+        <footer>
+            <p>🎓 System Design Complete Guide | For 2-Year Java Developers</p>
+            <p>Practice hard, think clearly, explain well!</p>
+        </footer>
+    </div>
+
+    <script>
+        function showTab(tabId, button) {
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            button.classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>
